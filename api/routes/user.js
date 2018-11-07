@@ -32,7 +32,13 @@ router.post('/signup', (req, res, next) => {
 						});
 					}).catch(err => {
 						console.log(err);
-						res.status(500).json({ error: err });
+						let message = '';
+						if (err.name === 'ValidationError') {
+							message = 'Błąd walidacji danych';
+						} else {
+							message = 'Nieznany błąd';
+						}
+						res.status(500).json({ message });
 					});
 				}
 			})
@@ -60,7 +66,7 @@ router.post('/login', (req, res, next) => {
 				const token = jwt.sign({
 					email: user.email,
 					id: user._id,
-				}, 
+				},
 				jwtKey, { expiresIn: "1h" });
 				return res.status(200).json({
 					message: 'Auth successful',
